@@ -23,9 +23,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class ReflectionTelegramBot extends TelegramWebhookBot {
     private String botPath;
     private String botUsername;
+    private TelegramFacade telegramFacade;
 
-    public ReflectionTelegramBot(DefaultBotOptions options, String botToken) {
+    public ReflectionTelegramBot(DefaultBotOptions options, String botToken, TelegramFacade telegramFacade) {
         super(options, botToken);
+        this.telegramFacade = telegramFacade;
     }
 
 
@@ -33,16 +35,14 @@ public class ReflectionTelegramBot extends TelegramWebhookBot {
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update){
         System.out.println(update);
+        SendMessage replyMessageToUser = telegramFacade.handleUpdate(update);
 
-        SendMessage message = new SendMessage();
-        message.setChatId(update.getMessage().getChatId().toString());
-        message.setText(update.getMessage().getText());
         try {
-            execute(message);
+            execute(replyMessageToUser);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
 
-        return null;
+        return replyMessageToUser;
     }
 }

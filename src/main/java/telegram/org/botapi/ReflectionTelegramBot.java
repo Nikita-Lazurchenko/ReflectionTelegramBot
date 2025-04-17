@@ -37,12 +37,6 @@ public class ReflectionTelegramBot extends TelegramWebhookBot {
         System.out.println(update);
         SendMessage replyMessageToUser = telegramFacade.handleUpdate(update);
 
-        try {
-            execute(replyMessageToUser);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-
         return replyMessageToUser;
     }
 }

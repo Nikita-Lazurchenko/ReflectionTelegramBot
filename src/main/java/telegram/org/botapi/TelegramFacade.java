@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegram.org.cache.UserDataCache;
+import telegram.org.service.ReplyMessagesService;
 
 @Slf4j
 @AllArgsConstructor
@@ -18,6 +22,10 @@ public class TelegramFacade {
 
     public SendMessage handleUpdate(Update update) {
         SendMessage replyMessage = null;
+
+        if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+        }
 
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
@@ -30,30 +38,12 @@ public class TelegramFacade {
     }
 
     private SendMessage handleInputMessage(Message message) {
-        String inputMsg = message.getText();
-        long userId = message.getFrom().getId();
-        BotState botState;
-        SendMessage replyMessage;
-
-        switch (inputMsg) {
-            case "/start":
-                botState = BotState.GREETINGS;
-                break;
-            case "Немного о себе":
-                botState = BotState.FILLING_PROFILE;
-                break;
-            case "О боте":
-                botState = BotState.ABOUT_BOT;
-                break;
-            default:
-                botState = userDataCache.getUsersCurrentBotState(userId);
-                break;
-        }
-
-        userDataCache.setUsersCurrentBotState(userId, botState);
-
-        replyMessage = botStateContext.processInputMessage(botState, message);
-
-        return replyMessage;
+         
     }
+
+    private SendMessage handleInputCallbackQuery(CallbackQuery callbackQuery) {
+
+    }
+
 }
+
